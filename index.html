@@ -138,6 +138,20 @@ button {
     transform: scale(1);
   }
 }
+/* Remove mobile tap highlight */
+button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:active {
+  background-color: inherit;
+}
 
 </style>
 </head>
@@ -192,6 +206,7 @@ setInterval(() => {
 const noBtn = document.getElementById("noBtn");
 const btnArea = document.getElementById("btnArea");
 
+/* Move NO inside the box */
 function moveNoButton() {
   const area = btnArea.getBoundingClientRect();
   const maxX = area.width - noBtn.offsetWidth;
@@ -204,8 +219,27 @@ function moveNoButton() {
   noBtn.style.top = y + "px";
 }
 
+/* Desktop hover */
 noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("touchstart", moveNoButton);
+
+/* Mobile: react BEFORE touch */
+noBtn.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  moveNoButton();
+});
+
+/* Extra smoothness: escape when finger is close */
+document.addEventListener("touchmove", (e) => {
+  const touch = e.touches[0];
+  const rect = noBtn.getBoundingClientRect();
+
+  const dist = Math.hypot(
+    touch.clientX - (rect.left + rect.width / 2),
+    touch.clientY - (rect.top + rect.height / 2)
+  );
+
+  if (dist < 90) moveNoButton();
+});
 
 /* YES click celebration */
 function celebrate() {
